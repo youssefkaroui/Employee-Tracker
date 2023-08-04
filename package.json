@@ -1,0 +1,19 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "a commandline application that helps track employee data base",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youssefkaroui/Employee-Tracker.git"
+  },
+  "author": "Youssef Karoui Youssefkaroui6@gmail.com youssefkaroui",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/youssefkaroui/Employee-Tracker/issues"
+  },
+  "homepage": "https://github.com/youssefkaroui/Employee-Tracker#readme"
+}
