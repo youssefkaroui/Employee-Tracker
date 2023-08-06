@@ -35,7 +35,7 @@ VALUES
 ('Dina', 'Efficeint', 10, 3),
 ('Phil', 'Jumpy', 11, 3),
 ('Katie', 'Smiles', 12, 3),
-('Micky', 13, 3);
+('Micky', 'Joyfull', 13, 3);
 
 
 
