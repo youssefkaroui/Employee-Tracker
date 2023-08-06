@@ -129,4 +129,45 @@ function displayRoles (){
      
 };
 
+// adds a role
+function addRole () {
+  inquirer
+  .prompt ([
+    {
+    type : 'input',
+    name: 'role',
+    message: 'What role would you like to add?',
+
+    validate: addRole => {
+      if (addRole){
+        return true;
+      } else {
+        console.log('Please enter a role you would like to add.');
+        return false;
+      }
+    }
+  },
+  {
+    type: 'input',
+    name:'salary',
+    message:'What would you like the salary of this role to be?',
+    validate: addSalary => {
+      if (isNaN(addSalary)){ 
+        return true;
+      } else {
+        console.log('Please enter desired salary for added role.');
+        return false;
+      }
+    }
+  }
+
+
+])
+.then( answer =>{
+  const input = [answer.role, answer.salary];
+  
+})
+}
+
+
 
