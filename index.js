@@ -131,43 +131,53 @@ function displayRoles (){
 
 // adds a role
 function addRole () {
-  inquirer
-  .prompt ([
-    {
-    type : 'input',
-    name: 'role',
-    message: 'What role would you like to add?',
+const departments = [];
+  connection.query("SELECT * FROM DEPARTMENT", (err, res) => {
+    if (err) throw err;
 
-    validate: addRole => {
-      if (addRole){
-        return true;
-      } else {
-        console.log('Please enter a role you would like to add.');
-        return false;
+    res.forEach(department => {
+      const params = {
+        name: department.name,
+        value: department.id
       }
-    }
-  },
-  {
-    type: 'input',
-    name:'salary',
-    message:'What would you like the salary of this role to be?',
-    validate: addSalary => {
-      if (isNaN(addSalary)){ 
-        return true;
-      } else {
-        console.log('Please enter desired salary for added role.');
-        return false;
+      departments.push(params);
+    });
+    
+    const  questions = [
+      {
+        type: "input",
+        name: "title",
+        message: "What would you like the title of this role to be?"
+      },
+      {
+        type: "input",
+        name: "salary",
+        message: "what would you like the salary of this role to be?"
+      },
+      {
+        type: "list",
+        name: "department",
+        choices: departments,
+        message: "which department is this role in?"
       }
-    }
-  }
+    ];
 
+    inquirer
+    .prompt(questions)
+    .then(response => {
+      const query = `INSERT INTO ROLE (title, salary, department_id) VALUES (?)`;
+      connection.query(query, [[response.title, response.salary, response.department]], (err, res) => {
+        if (err) throw err;
+        console.log(`Successfully added ${response.title} role `);
+        promptUser();
+      });
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  });
 
-])
-.then( answer =>{
-  const input = [answer.role, answer.salary];
-  
-})
-}
+};
 
 
 
