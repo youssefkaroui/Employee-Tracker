@@ -142,7 +142,7 @@ const departments = [];
       }
       departments.push(params);
     });
-    
+
     const  questions = [
       {
         type: "input",
@@ -178,6 +178,71 @@ const departments = [];
   });
 
 };
+
+function  addEmployee ()  {
+  // gets all employees
+  connection.query("SELECT * FROM EMPLOYEE", (err, employeeResponse) => {
+    if (err) throw err;
+    const employeeChoice = [
+      {
+        name: '',
+        value: 0
+      }
+    ]; 
+    employeeResponse.forEach(({ first_name, last_name, id }) => {
+      employeeChoice.push({name: first_name + " " + last_name,value: id});
+    });
+    
+    //get all the role list so that we can select the role of the new employee
+    connection.query("SELECT * FROM ROLE", (err, roleResponse) => {
+      if (err) throw err;
+      const roleChoice = [];
+      roleResponse.forEach(({ title, id }) => {
+        roleChoice.push({name: title, value: id });
+        });
+     
+      const questions = [
+        {
+          type: "input",
+          name: "first_name",
+          message: "What is the employee's first name?"
+        },
+        {
+          type: "input",
+          name: "last_name",
+          message: "What is the employee's last name?"
+        },
+        {
+          type: "list",
+          name: "role_id",
+          choices: roleChoice,
+          message: "What would you like the employee's role to be?"
+        },
+        {
+          type: "list",
+          name: "manager_id",
+          choices: employeeChoice,
+          message: "Who is the employee's manager? (could be null)"
+        }
+      ]
+  
+      inquier.prompt(questions)
+        .then(response => {
+          const query = `INSERT INTO EMPLOYEE (first_name, last_name, role_id, manager_id) VALUES (?)`;
+          const manager_id = response.manager_id !== 0? response.manager_id: null;
+          connection.query(query, [[response.first_name, response.last_name, response.role_id, manager_id]], (err, res) => {
+            if (err) throw err;
+            console.log(`successfully added ${response.first_name} ${response.last_name} to your workforce!`);
+            promptUser();
+          });
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    })
+  });
+}
+
 
 
 
