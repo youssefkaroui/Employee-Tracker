@@ -183,22 +183,22 @@ function  addEmployee ()  {
   // gets all employees
   connection.query("SELECT * FROM EMPLOYEE", (err, employeeResponse) => {
     if (err) throw err;
-    const employeeChoice = [
+    const employeesList = [
       {
         name: '',
         value: 0
       }
     ]; 
     employeeResponse.forEach(({ first_name, last_name, id }) => {
-      employeeChoice.push({name: first_name + " " + last_name,value: id});
+      employeesList.push({name: first_name + " " + last_name,value: id});
     });
     
     //get all the role list so that we can select the role of the new employee
     connection.query("SELECT * FROM ROLE", (err, roleResponse) => {
       if (err) throw err;
-      const roleChoice = [];
+      const rolesList = [];
       roleResponse.forEach(({ title, id }) => {
-        roleChoice.push({name: title, value: id });
+        rolesList.push({name: title, value: id });
         });
      
       const questions = [
@@ -215,24 +215,25 @@ function  addEmployee ()  {
         {
           type: "list",
           name: "role_id",
-          choices: roleChoice,
+          choices: rolesList,
           message: "What would you like the employee's role to be?"
         },
         {
           type: "list",
           name: "manager_id",
-          choices: employeeChoice,
+          choices: employeesList,
           message: "Who is the employee's manager? (could be null)"
         }
       ]
   
-      inquier.prompt(questions)
+      inquier
+      .prompt(questions)
         .then(response => {
           const query = `INSERT INTO EMPLOYEE (first_name, last_name, role_id, manager_id) VALUES (?)`;
           const manager_id = response.manager_id !== 0? response.manager_id: null;
           connection.query(query, [[response.first_name, response.last_name, response.role_id, manager_id]], (err, res) => {
             if (err) throw err;
-            console.log(`successfully added ${response.first_name} ${response.last_name} to your workforce!`);
+            console.log(` You have successfully added ${response.first_name} ${response.last_name} to your workforce!`);
             promptUser();
           });
         })
@@ -240,6 +241,63 @@ function  addEmployee ()  {
           console.error(err);
         });
     })
+  });
+}
+
+// updated  employee's role 
+function updateEmployee () {
+  //grabs employees list 
+  connection.query("SELECT * FROM EMPLOYEE", (err, employeeResponse) => {
+    if (err) throw err;
+    const employeesList = [];
+    employeeResponse.forEach(({ first_name, last_name, id }) => {
+      employeesList.push({
+        name: first_name + " " + last_name,
+        value: id
+      });
+    });
+    
+    //grabs all the roles to allow us to update the role 
+    connection.query("SELECT * FROM ROLE", (err, roleResponse) => {
+      if (err) throw err;
+      const rolesList = [];
+      roleResponse.forEach(({ title, id }) => {
+        rolesList.push({
+          name: title,
+          value: id
+          });
+        });
+     
+      let questions = [
+        {
+          type: "list",
+          name: "id",
+          choices: employeesList,
+          message: "Whose role would you like to update?"
+        },
+        {
+          type: "list",
+          name: "role_id",
+          choices: rolesList,
+          message: "What is the new role going to be?"
+        }
+      ]
+  
+      inquier.prompt(questions)
+        .then(response => {
+          const query = `UPDATE EMPLOYEE SET ? WHERE ?? = ?;`;
+          connection.query(query, [{role_id: response.role_id}, "id", response.id],
+           (err, res) => {
+            if (err) throw err;
+            
+            console.log("You have successfully updated employee's role!");
+            promptUser();
+          });
+        })
+        .catch(err => {
+          console.error(err);
+        });
+      })
   });
 }
 
