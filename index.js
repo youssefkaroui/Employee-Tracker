@@ -357,6 +357,64 @@ function  addDepartment () {
   });
 }
 
+// updates an employee's manager
+
+function updateManager () {
+  //get all the employee list 
+  connection.query("SELECT * FROM EMPLOYEE", (err, employeeResponse) => {
+    if (err) throw err;
+    const employeeName = [];
+    employeeResponse.forEach(({ first_name, last_name, id }) => {
+      employeeName.push({
+        name: first_name + " " + last_name,
+        value: id
+      });
+    });
+    
+    const managerName = [{
+      name: 'None',
+      value: 0
+    }]; //an employee could have no manager
+    employeeResponse.forEach(({ first_name, last_name, id }) => {
+      managerName.push({
+        name: first_name + " " + last_name,
+        value: id
+      });
+    });
+     
+    const questions = [
+      {
+        type: "list",
+        name: "id",
+        choices: employeeName,
+        message: "Who would you like to update?"
+      },
+      {
+        type: "list",
+        name: "manager_id",
+        choices: managerName,
+        message: "Who is the employee's new manager?"
+      }
+    ]
+  
+    inquirer
+    .prompt(questions)
+      .then(response => {
+        const db = `UPDATE EMPLOYEE SET ? WHERE id = ?;`;
+        const manager_id = response.manager_id !== 0? response.manager_id: null;
+        connection.query(db, [{manager_id: manager_id},response.id], (err, res) => {
+          if (err) throw err;  
+          console.log("You have successfully updated the employee's manager");
+          promptUser();
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  })
+  
+};
+
 
 
 
