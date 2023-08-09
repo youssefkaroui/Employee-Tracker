@@ -414,6 +414,19 @@ function updateManager () {
   })
   
 };
+function employeeDepartment  () {
+  console.log('Showing employee by department.');
+  const db = `SELECT employee.first_name, employee.last_name, department.name AS department 
+         FROM employee 
+        LEFT JOIN role ON employee.role_id = role.id 
+        LEFT JOIN department ON role.department_id = department.id`;
+
+  connection.promise().query(sql, (err, res) => {
+    if (err) throw err; 
+    console.table(res); 
+    promptUser();
+  });          
+};
 
 
 
