@@ -226,7 +226,7 @@ function  addEmployee ()  {
         }
       ]
   
-      inquier
+      inquirer
       .prompt(questions)
         .then(response => {
           const query = `INSERT INTO EMPLOYEE (first_name, last_name, role_id, manager_id) VALUES (?)`;
@@ -242,7 +242,7 @@ function  addEmployee ()  {
         });
     })
   });
-}
+};
 
 // updated  employee's role 
 function updateEmployee () {
@@ -283,7 +283,8 @@ function updateEmployee () {
         }
       ]
   
-      inquier.prompt(questions)
+      inquirer
+      .prompt(questions)
         .then(response => {
           const query = `UPDATE EMPLOYEE SET ? WHERE ?? = ?;`;
           connection.query(query, [{role_id: response.role_id}, "id", response.id],
@@ -299,7 +300,20 @@ function updateEmployee () {
         });
       })
   });
-}
+};
+
+// displays all the departments 
+function  displayDepartments  () {
+  console.log('Showing all departments.');
+  const query = `SELECT department.id AS id, department.name AS department FROM department`; 
+
+  connection.promise().query(query, (err, res) => {
+    if (err) throw err;
+    console.table(res);
+    promptUser();
+  });
+};
+
 
 
 
