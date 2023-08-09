@@ -444,7 +444,7 @@ function employeeDepartment  () {
         type: "list",
         name: "id",
         choices: employeeName,
-        message: "which employee would you like to delete?"
+        message: "Which employee would you like to delete?"
       }
     ];
 
@@ -454,11 +454,49 @@ function employeeDepartment  () {
       const db = `DELETE FROM EMPLOYEE WHERE id = ?`;
       connection.query(db, [response.id], (err, res) => {
         if (err) throw err;
-        console.log(`You have successfully deleted ${res.affectedRows}!`);
+        console.log(`You have successfully deleted the employee!`);
         promptUser();
       });
     })
+    .catch(err => {
+      console.error(err);
+    });
+  });
+};
 
+// deletes a role from db 
+function deleteRole  () {
+  connection.query("SELECT * FROM ROLE", (err, res) => {
+    if (err) throw err;
+    const role = [];
+    res.forEach(({ title, id }) => {
+      role.push({name: title, value: id});
+    });
+
+    const Questions = [
+      {
+        type: "list",
+        name: "id",
+        choices: role,
+        message: "Which role would you like to delete?"
+      }
+    ];
+
+    inquirer
+    .prompt(Questions)
+    .then(response => {
+      const db = `DELETE FROM ROLE WHERE id = ?`;
+      connection.query(db, [response.id], (err, res) => {
+        if (err) throw err;
+        console.log(`You have successfully deleted the role!`);
+        promptUser();
+      });
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  });
+};
 
 
 
