@@ -118,10 +118,10 @@ const promptUser = () => {
 // displays roles
 function displayRoles (){
     console.log('Showing all roles');
-    const sql = `SELECT role.id, role.title, department.name AS department
+    const db = `SELECT role.id, role.title, department.name AS department
                 FROM role
                 INNER JOIN department ON role.department_id = department.id`;
-    connection.query(sql, (err, response)=>{
+    connection.query(db , (err, response)=>{
         if (err) throw err;
         console.table(response);
         promptUser();
@@ -165,8 +165,8 @@ const departments = [];
     inquirer
     .prompt(questions)
     .then(response => {
-      const query = `INSERT INTO ROLE (title, salary, department_id) VALUES (?)`;
-      connection.query(query, [[response.title, response.salary, response.department]], (err, res) => {
+      const db  = `INSERT INTO ROLE (title, salary, department_id) VALUES (?)`;
+      connection.query(db, [[response.title, response.salary, response.department]], (err, res) => {
         if (err) throw err;
         console.log(`Successfully added ${response.title} role `);
         promptUser();
@@ -305,9 +305,9 @@ function updateEmployee () {
 // displays all the departments 
 function  displayDepartments  () {
   console.log('Showing all departments.');
-  const query = `SELECT department.id AS id, department.name AS department FROM department`; 
+  const db = `SELECT department.id AS id, department.name AS department FROM department`; 
 
-  connection.query(query, (err, res) => {
+  connection.query(db, (err, res) => {
     if (err) throw err;
     console.table(res);
     promptUser();
@@ -318,19 +318,44 @@ function  displayDepartments  () {
 
  function displayEmployees () {
   console.log('Showing all employees.'); 
-  const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, 
+  const db = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, 
       CONCAT (manager.first_name, " ", manager.last_name) AS manager
       FROM employee
       LEFT JOIN role ON employee.role_id = role.id
       LEFT JOIN department ON role.department_id = department.id
      LEFT JOIN employee manager ON employee.manager_id = manager.id`;
 
-  connection.query(query, (err, res) => {
+  connection.query(db, (err, res) => {
     if (err) throw err; 
     console.table(res);
     promptUser();
   });
 };
+
+// adds a new department to db
+
+function  addDepartment () {
+  const questions = [
+    {
+      type: "input",
+      name: "name",
+      message: "what is the new department name?"
+    }
+  ];
+  inquirer
+  .prompt(questions)
+  .then(response => {
+    const db = `INSERT INTO department (name) VALUES (?)`;
+    connection.query(db, [response.name], (err, res) => {
+      if (err) throw err;
+      console.log(`You have successfully added ${response.name} department `);
+      promptUser();
+    });
+  })
+  .catch(err => {
+    console.error(err);
+  });
+}
 
 
 
