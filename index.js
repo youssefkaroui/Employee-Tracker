@@ -414,6 +414,7 @@ function updateManager () {
   })
   
 };
+// displays list of employees by department 
 function employeeDepartment  () {
   console.log('Showing employee by department.');
   const db = `SELECT employee.first_name, employee.last_name, department.name AS department 
@@ -421,12 +422,42 @@ function employeeDepartment  () {
         LEFT JOIN role ON employee.role_id = role.id 
         LEFT JOIN department ON role.department_id = department.id`;
 
-  connection.promise().query(sql, (err, res) => {
+  connection.query(db, (err, res) => {
     if (err) throw err; 
     console.table(res); 
     promptUser();
   });          
 };
+// deletes an employee from the company db
+ function deleteEmployee () {
+  
+  connection.query("SELECT * FROM EMPLOYEE", (err, res) => {
+    if (err) throw err;
+
+    const employeeName = [];
+    res.forEach(({ first_name, last_name, id }) => {
+      employeeName.push({name: first_name + " " + last_name, value: id});
+    });
+
+    const questions = [
+      {
+        type: "list",
+        name: "id",
+        choices: employeeName,
+        message: "which employee would you like to delete?"
+      }
+    ];
+
+    inquirer
+    .prompt(questions)
+    .then(response => {
+      const db = `DELETE FROM EMPLOYEE WHERE id = ?`;
+      connection.query(db, [response.id], (err, res) => {
+        if (err) throw err;
+        console.log(`You have successfully deleted ${res.affectedRows}!`);
+        promptUser();
+      });
+    })
 
 
 
