@@ -307,13 +307,30 @@ function  displayDepartments  () {
   console.log('Showing all departments.');
   const query = `SELECT department.id AS id, department.name AS department FROM department`; 
 
-  connection.promise().query(query, (err, res) => {
+  connection.query(query, (err, res) => {
     if (err) throw err;
     console.table(res);
     promptUser();
   });
 };
 
+// displays a list of all employees
+
+ function displayEmployees () {
+  console.log('Showing all employees.'); 
+  const query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, 
+      CONCAT (manager.first_name, " ", manager.last_name) AS manager
+      FROM employee
+      LEFT JOIN role ON employee.role_id = role.id
+      LEFT JOIN department ON role.department_id = department.id
+     LEFT JOIN employee manager ON employee.manager_id = manager.id`;
+
+  connection.query(query, (err, res) => {
+    if (err) throw err; 
+    console.table(res);
+    promptUser();
+  });
+};
 
 
 
