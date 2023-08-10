@@ -17,8 +17,6 @@ connection.connect(err => {
     if (err) throw err;
     console.log('connected as id' + connection.threadId);
    starterPage();
-   promptUser(); 
-
 } );
 
 function starterPage () {
@@ -27,11 +25,12 @@ function starterPage () {
           console.log('Error, ASCII art not loaded!');
         } else {
           console.log(data);
+          promptUser(); 
         }  
       });
 }; 
 
-const promptUser = () => {
+const promptUser = () =>  {
     inquirer
     .prompt ([
         {
@@ -55,7 +54,7 @@ const promptUser = () => {
         }
     ])
     .then((answers) => {
-        const { choices } = answers; 
+        const { choices }  = answers; 
   
         if (choices === "View all departments") {
           displayDepartments();
@@ -497,6 +496,82 @@ function deleteRole  () {
     });
   });
 };
+// deletes a department from db
 
+function deleteDepartment () {
+ 
+  connection.query("SELECT * FROM DEPARTMENT", (err, res) => {
+    if (err) throw err;
+    const department = [];
+    res.forEach(({ name, id }) => {
+      department.push({name: name, value: id
+      });
+    
+    });
 
+    const  Questions = [
+      {
+        type: "list",
+        name: "id",
+        choices: department,
+        message: "which department would you like to delete?"
+      }
+    ];
+
+    inquirer
+    .prompt(Questions)
+    .then(response => {
+      const db = `DELETE FROM DEPARTMENT WHERE id = ?`;
+      connection.query(db, [response.id], (err, res) => {
+        if (err) throw err;
+        console.log(`You have successfully deleted the deparment!`);
+        promptUser();
+      });
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  });
+};
+
+// display departments budget 
+
+function  checkBudget  () {
+  connection.query("SELECT * FROM DEPARTMENT", (err, res) => {
+    if (err) throw err;
+
+    const department = [];
+    res.forEach(({ name, id }) => {
+      department.push({ name: name, value: id});
+    });
+
+    const Questions = [
+      {
+        type: "list",
+        name: "id",
+        choices: department,
+        message: "Which department's budget would you like to check?"
+      }
+    ]
+    inquirer
+    .prompt(Questions)
+    .then(response => {
+      const db = `SELECT D.name, SUM(salary) AS budget FROM EMPLOYEE AS E LEFT JOIN ROLE AS R
+      ON E.role_id = R.id
+      LEFT JOIN DEPARTMENT AS D
+      ON R.department_id = D.id
+      WHERE D.id = ?
+      `;
+      connection.query(db, [response.id], (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        promptUser();
+      });
+    })
+    .catch(err => {
+      console.error(err);
+    });
+  });
+
+};
 
