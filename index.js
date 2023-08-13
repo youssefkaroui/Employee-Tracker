@@ -7,10 +7,11 @@ const figlet = require('figlet');
 
 // connects to database
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password:'Josefka06',
-    database:'employee_db'
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database
+    
 });
 
 connection.connect(err => {
